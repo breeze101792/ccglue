@@ -1,7 +1,18 @@
 # .SUFFIXES: .C .o
 # CXX := g++
-CXX := clang++
-STRIP := strip
+ifeq ($(ARCH), arm)
+	# this is for cross compile
+	CXX := arm-linux-gnueabihf-g++
+	STRIP := arm-linux-gnueabihf-strip
+else ifeq ($(ARCH), arm64)
+	# this is for cross compile
+	CXX := aarch64-linux-gnu-g++
+	STRIP := aarch64-linux-gnu-strip
+else
+	CXX := clang++
+	STRIP := strip
+endif
+
 CXXFLAGS := -std=c++11  -Wno-deprecated-declarations 
 INCLUDES := -I include
 # CC       = gcc
@@ -13,6 +24,7 @@ ifndef MODE
 	# $(warning MODE not defined)
 	MODE = release
 endif
+
 $(info Compile Mode: $(MODE))
 
 ifeq ($(MODE), release)
@@ -20,6 +32,8 @@ ifeq ($(MODE), release)
 else
 	CXXFLAGS += -g
 endif
+# compile tool as staticly
+CXXFLAGS += -static
 
 
 # OJBFILEES = OBJECTS
